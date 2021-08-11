@@ -5,6 +5,7 @@
   "main": "dist/ws-audio-api.min.js",
   "scripts": {
     "prepublish": "bash -c ./build.sh"
+    
   },
   "repository": {
     "type": "git",
