@@ -1,15 +1,22 @@
+<!DOCTYPE html>
 <html>
-  <head> </head>
+  <head>
+    <link rel="stylesheet" href="display.css" />
+  </head>
   <body>
-    <button>START</button>
+    <button class="start" onclick="startContext();streamer.start()">
+      START
+    </button>
+    <button class="stop" onclick="streamer.stop()">STOP</button>
   </body>
+
   <script src="../src/libopus.js"></script>
   <script src="../src/opus.js"></script>
   <script src="../src/xaudio.js"></script>
   <script src="../src/ws-audio-api.js"></script>
   <script>
     function startContext() {
-      var audioContext = new (window.AudioContext ||
+      const audioContext = new (window.AudioContext ||
         window.webkitAudioContext)()
       window.audioContext = audioContext
 
@@ -50,6 +57,7 @@
           launchedContext = true
         }
       })()
+
       let defaultConfig = {
         codec: {
           sampleRate: 24000,
@@ -58,46 +66,27 @@
           frameDuration: 20,
           bufferSize: 4096,
         },
-        server: { host: 'ws://localhost:8080' },
+        server: {
+          host: 'ws://localhost:8080',
+        },
       }
 
-      window.player = new WSAudioAPI.Player(defaultConfig)
       window.streamer = new WSAudioAPI.Streamer(defaultConfig)
-      const mute = document.querySelector('.mute')
-      const volume = document.querySelector('#volume')
-      const volumeIndicator = document.querySelector('#volumeIndicator')
-      volumeIndicator.value = player.getVolume()
-
-      function setVol(val) {
-        player.setVolume(val)
-        volumeIndicator.value = player.getVolume()
-      }
-
-      function voiceMute() {
-        if (mute.id == '') {
-          streamer.mute()
-          mute.id = 'activated'
-          mute.innerHTML = 'Unmute'
-        } else {
-          streamer.unMute()
-          mute.id = ''
-          mute.innerHTML = 'Mute'
-        }
-      }
     }
-    document.addEventListener('DOMContentLoaded', () => {
-      let text = true
-      const btn = document.querySelector('button')
+    const start = document.querySelector('.start')
+    const stop = document.querySelector('.stop')
 
-      btn.addEventListener('click', onClickButton => {
-        if (text == true) {
-          btn.innerHTML = ' STOP'
-          text = false
-        } else {
-          btn.innerHTML = 'START'
-          text = true
-        }
-      })
+    stop.classList.add('hidden')
+
+    start.addEventListener('click', () => {
+      start.classList.add('hidden')
+
+      stop.classList.remove('hidden')
+    })
+
+    stop.addEventListener('click', () => {
+      stop.classList.add('hidden')
+      start.classList.remove('hidden')
     })
   </script>
 </html>

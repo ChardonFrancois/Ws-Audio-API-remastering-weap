@@ -7,10 +7,8 @@
 //    Frame Duration: 2.5, 5, 10, 20, 40, 60
 //    Buffer Size = sample rate/6000 * 1024
 
-//change var for  const and let
-
 ;(function (global) {
-  const defaultConfig = {
+  let defaultConfig = {
     codec: {
       sampleRate: 24000,
       channels: 1,
@@ -24,7 +22,7 @@
   }
 
   let WSAudioAPI = (global.WSAudioAPI = {
-    Streamer: (config, socket) => {
+    Streamer: function (config, socket) {
       navigator.getUserMedia =
         navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
@@ -47,12 +45,14 @@
         this.config.codec.app,
         this.config.codec.frameDuration
       )
-      const _this = this
+      let _this = this
 
-      this._makeStream = onError => {
+      this._makeStream = function (onError) {
         navigator.getUserMedia(
-          { audio: true },
-          stream => {
+          {
+            audio: true,
+          },
+          function (stream) {
             _this.stream = stream
             _this.audioInput = audioContext.createMediaStreamSource(stream)
             _this.gainNode = audioContext.createGain()
@@ -62,7 +62,7 @@
               1
             )
 
-            _this.recorder.onaudioprocess = e => {
+            _this.recorder.onaudioprocess = function (e) {
               let resampled = _this.sampler.resampler(
                 e.inputBuffer.getChannelData(0)
               )
@@ -82,7 +82,7 @@
     },
   })
 
-  WSAudioAPI.Streamer.prototype.start = onError => {
+  WSAudioAPI.Streamer.prototype.start = function (onError) {
     let _this = this
     console.log(this.config)
     if (!this.parentSocket) {
@@ -96,9 +96,9 @@
     if (this.socket.readyState == WebSocket.OPEN) {
       this._makeStream(onError)
     } else if (this.socket.readyState == WebSocket.CONNECTING) {
-      const _onopen = this.socket.onopen
+      let _onopen = this.socket.onopen
 
-      this.socket.onopen = () => {
+      this.socket.onopen = function () {
         if (_onopen) {
           _onopen()
         }
@@ -108,9 +108,9 @@
       console.error('Socket is in CLOSED state')
     }
 
-    const _onclose = this.socket.onclose
+    let _onclose = this.socket.onclose
 
-    this.socket.onclose = event => {
+    this.socket.onclose = function (event) {
       if (_onclose) {
         _onclose(event)
       }
@@ -131,23 +131,13 @@
     }
   }
 
-  WSAudioAPI.Streamer.prototype.mute = () => {
-    this.gainNode.gain.value = 0
-    console.log('Mic muted')
-  }
-
-  WSAudioAPI.Streamer.prototype.unMute = () => {
-    this.gainNode.gain.value = 1
-    console.log('Mic unmuted')
-  }
-
-  WSAudioAPI.Streamer.prototype.onError = e => {
+  WSAudioAPI.Streamer.prototype.onError = function (e) {
     let error = new Error(e.name)
     error.name = 'NavigatorUserMediaError'
     throw error
   }
 
-  WSAudioAPI.Streamer.prototype.stop = () => {
+  WSAudioAPI.Streamer.prototype.stop = function () {
     if (this.audioInput) {
       this.audioInput.disconnect()
       this.audioInput = null

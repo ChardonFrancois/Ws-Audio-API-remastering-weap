@@ -16,7 +16,7 @@ const wss = new WebSocketServer({ server: httpsServer })
 wss.on('connection', (ws, req) => {
   let connectionId = req.headers['sec-websocket-key']
 
-  wss.on('message', message => {
+  ws.on('message', message => {
     console.log(message)
     // send data to --> Vosk API //Google Speech API // CommonVoice // ...
     // --> gives text back (transcription)
