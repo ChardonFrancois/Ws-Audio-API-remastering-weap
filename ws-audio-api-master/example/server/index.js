@@ -20,6 +20,16 @@ wss.on('connection', (ws, req) => {
     console.log(message)
     // send data to --> Vosk API //Google Speech API // CommonVoice // ...
     // --> gives text back (transcription)
+
+    const vosk = require('vosk')
+    if (SPEECH_METHOD === 'vosk') {
+      vosk.setLogLevel(-1)
+      // MODELS: https://alphacephei.com/vosk/models
+      const model = new vosk.Model('vosk_models/en')
+      const rec = new vosk.Recognizer({ model: model, sampleRate: 48000 })
+      vosk._rec_ = rec
+      // dev reference: https://github.com/alphacep/vosk-api/blob/master/nodejs/index.js
+    }
   })
   console.log('Speaker connected')
 })
