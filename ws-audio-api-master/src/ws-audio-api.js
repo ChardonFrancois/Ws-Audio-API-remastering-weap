@@ -23,6 +23,7 @@
 
   let WSAudioAPI = (global.WSAudioAPI = {
     Streamer: function (config, socket) {
+      //1 : get microphone access
       navigator.getUserMedia =
         navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
@@ -63,11 +64,15 @@
             )
 
             _this.recorder.onaudioprocess = function (e) {
+              //2 : e.InputBuffer == raw audio data
               let resampled = _this.sampler.resampler(
                 e.inputBuffer.getChannelData(0)
               )
+
+              //3 : raw audio --> opus encoded data
               let packets = _this.encoder.encode_float(resampled)
               for (let i = 0; i < packets.length; i++) {
+                //4 : send data over socket
                 if (_this.socket.readyState == 1) _this.socket.send(packets[i])
               }
             }
@@ -109,6 +114,19 @@
     }
 
     let _onclose = this.socket.onclose
+
+    //we receive the message from the server
+    this.socket.onmessage = function (message) {
+      console.log(message)
+
+      let addMsg = document.createElement('div')
+
+      if (message) {
+        addMsg.textContent = message.data
+        addMsg.className = 'box-shadow'
+      }
+      document.querySelector('.output').prepend(addMsg)
+    }
 
     this.socket.onclose = function (event) {
       if (_onclose) {

@@ -46,7 +46,7 @@ var Opus = (function () {
   }
   return Opus
 })()
-var OpusEncoder = (function () {
+let OpusEncoder = (function () {
   function OpusEncoder(sampling_rate, channels, app, frame_duration) {
     if (frame_duration === void 0) {
       frame_duration = 20

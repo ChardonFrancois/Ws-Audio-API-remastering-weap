@@ -10,10 +10,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/opus": "^0.5.3",
+    "discord": "^0.8.2",
+    "discord.js": "^13.1.0",
     "fs": "*",
     "http": "*",
     "https": "*",
-    "vosk": "^0.3.30",
+    "jquery": "^3.6.0",
+    "python": "^0.0.4",
     "ws": "*"
+  },
+  "devDependencies": {
+    "vosk": "^0.3.30"
   }
 }

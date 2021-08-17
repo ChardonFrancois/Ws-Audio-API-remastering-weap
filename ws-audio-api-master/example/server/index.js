@@ -1,6 +1,12 @@
+
+
 const https = require('http')
 const fs = require('fs')
 const WebSocketServer = require('ws').Server
+// Create the encoder.
+// Specify 24kHz sampling rate and 1 channel size.
+let { OpusEncoder } = require('@discordjs/opus')
+const encoder = new OpusEncoder(24000, 1)
 
 const wsPort = 8080
 
@@ -13,28 +19,31 @@ const httpsServer = https
 
 const wss = new WebSocketServer({ server: httpsServer })
 
-wss.on('connection', (ws, req) => {
-  let connectionId = req.headers['sec-websocket-key']
+const vosk = require('vosk')
+vosk.setLogLevel(-1)
+// MODELS: https://alphacephei.com/vosk/models
+const model = new vosk.Model('samples/vosk-model-fr')
+const rec = new vosk.Recognizer({ model: model, sampleRate: 24000 })
+vosk._rec_ = rec
+// dev reference: https://github.com/alphacep/vosk-api/blob/master/nodejs/index.js
 
-  ws.on('message', message => {
-    console.log(message)
-    // send data to --> Vosk API //Google Speech API // CommonVoice // ...
-    // --> gives text back (transcription)
+wss.on('connection', function (ws, req) {
+  ws.on('message', function (message) {
+    //5 : message == opus encoded data
+    //console.log(message)
 
-    const vosk = require('vosk')
-    if (SPEECH_METHOD === 'vosk') {
-      vosk.setLogLevel(-1)
-      // MODELS: https://alphacephei.com/vosk/models
-      const model = new vosk.Model('vosk_models/en')
-      const rec = new vosk.Recognizer({ model: model, sampleRate: 48000 })
-      vosk._rec_ = rec
-      // dev reference: https://github.com/alphacep/vosk-api/blob/master/nodejs/index.js
-    }
+    //6 : decode data --> raw audio data
+    let raw_data = encoder.decode(message)
+
+    //7 : send raw audio data to VOSK API
+    if (vosk._rec_.acceptWaveform(raw_data))
+      //console.log(vosk._rec_.result()); //8: output
+      ws.send(vosk._rec_.result().text)
   })
   console.log('Speaker connected')
 })
 
-wss.on('close', () => {
+wss.on('close', function () {
   console.log('Speaker disconnected')
 })
 

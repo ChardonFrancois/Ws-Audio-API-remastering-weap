@@ -5,7 +5,6 @@
   "main": "dist/ws-audio-api.min.js",
   "scripts": {
     "prepublish": "bash -c ./build.sh"
-    
   },
   "repository": {
     "type": "git",
@@ -26,6 +25,7 @@
     "uglify-js": "^3.9.1"
   },
   "devDependencies": {
-    "prettier": "^2.3.2"
+    "prettier": "^2.3.2",
+    "vosk": "^0.3.30"
   }
 }
