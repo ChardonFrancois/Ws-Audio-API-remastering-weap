@@ -119,12 +119,15 @@
     this.socket.onmessage = function (message) {
       console.log(message)
 
+      // creation de la div
       let addMsg = document.createElement('div')
 
+      // si y a un message rjoute le message + la c;lasse box-shadow
       if (message) {
         addMsg.textContent = message.data
         addMsg.className = 'box-shadow'
       }
+      // ajoute l element dans la page HTML
       document.querySelector('.output').prepend(addMsg)
     }
 
