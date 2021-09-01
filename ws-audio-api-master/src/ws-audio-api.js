@@ -7,6 +7,8 @@
 //    Frame Duration: 2.5, 5, 10, 20, 40, 60
 //    Buffer Size = sample rate/6000 * 1024
 
+
+
 ;(function (global) {
   let defaultConfig = {
     codec: {
@@ -47,6 +49,10 @@
         this.config.codec.frameDuration
       )
       let _this = this
+
+      global.changeLang = function () {
+        _this.socket.send('changeLang:'  +  document.getElementById('lang').value)
+      }
 
       this._makeStream = function (onError) {
         navigator.getUserMedia(
@@ -117,16 +123,22 @@
 
     //we receive the message from the server
     this.socket.onmessage = function (message) {
-      console.log(message)
+      // console.log(message);
 
-      // creation de la div
+      /*const output = document.querySelector('.output');
+          if (message) {
+              output.innerHTML = message.data;
+          }*/
+
+      // create the paragraph
       let addMsg = document.createElement('div')
 
-      // si y a un message rjoute le message + la c;lasse box-shadow
+      // display the message on the paragraph
       if (message) {
         addMsg.textContent = message.data
-        addMsg.className = 'box-shadow'
+        addMsg.classList.add('box-shadow')
       }
+
       // ajoute l element dans la page HTML
       document.querySelector('.output').prepend(addMsg)
     }

@@ -4,6 +4,20 @@
     <link rel="stylesheet" href="./display.css" />
     <link rel="stylesheet" href="./container.css" />
 
+    <!-- jQuery -->
+    <link
+      rel="stylesheet"
+      href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
+    />
+    <link rel="stylesheet" href="/resources/demos/style.css" />
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+      $(function () {
+        $('#datepicker').datepicker()
+      })
+    </script>
+
     <!-- bootstrap-->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
@@ -13,16 +27,51 @@
     />
   </head>
   <body>
+    <!-- select picker -->
+    <select id="lang" onchange="window.changeLang()">
+      <option value="fr" selected>French</option>
+      <option value="es">Spanish</option>
+    </select>
+
+    <button class="open-calendar">Open calendar</button>
+    <button class="close-calendar">Close calendar</button>
+    <!-- btn start stop -->
+    <!-- <button id="btnGiveCommand">Change Language</button> -->
     <button class="start" onclick="startContext();streamer.start()">
       START
     </button>
     <button class="stop" onclick="streamer.stop()">STOP</button><br />
 
+    <!--google shearch-->
+
+    <!-- Calendar-->
+    <p class="input-calendar">
+      Calendrier R.D.V:
+      <input type="text" id="datepicker" />
+    </p>
+
+    <div class="container">
+      <form
+        action="https://www.google.com/search"
+        method="GET"
+        id="search-form"
+      >
+        <input
+          type="text"
+          name="q"
+          placeholder="Search google..."
+          autocomplete="off"
+          autofocus
+        />
+      </form>
+    </div>
+
+    <!-- alert message set language -->
+    <span id="message"></span>
     <!-- la div ou va se retrouver tout les messages -->
     <div class="output container"></div>
   </body>
 
-  <!--     bootstrap     -->
   <script
     src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"
     integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp"
@@ -39,6 +88,7 @@
   <script src="../src/xaudio.js"></script>
   <script src="../src/ws-audio-api.js"></script>
   <script src="./server/index.js"></script>
+  <script src="./server/search.js"></script>
 
   <script>
     function startContext() {
@@ -100,8 +150,12 @@
       window.streamer = new WSAudioAPI.Streamer(defaultConfig)
     }
 
+    //const  hidden btn start and stop + cont calendar
     const start = document.querySelector('.start')
     const stop = document.querySelector('.stop')
+    const openCalendar = document.querySelector('.open-calendar')
+    const closeCalendar = document.querySelector('.close-calendar')
+    const hiddenCalendar = document.querySelector('.input-calendar')
 
     stop.classList.add('hidden')
 
@@ -114,6 +168,22 @@
     stop.addEventListener('click', () => {
       stop.classList.add('hidden')
       start.classList.remove('hidden')
+    })
+
+    // hidden btn and calendar
+    hiddenCalendar.classList.add('hidden')
+    closeCalendar.classList.add('hidden')
+
+    openCalendar.addEventListener('click', () => {
+      openCalendar.classList.add('hidden')
+      hiddenCalendar.classList.remove('hidden')
+      closeCalendar.classList.remove('hidden')
+    })
+
+    closeCalendar.addEventListener('click', () => {
+      closeCalendar.classList.add('hidden')
+      hiddenCalendar.classList.add('hidden')
+      openCalendar.classList.remove('hidden')
     })
   </script>
 </html>

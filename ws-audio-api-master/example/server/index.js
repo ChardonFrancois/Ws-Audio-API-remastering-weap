@@ -1,11 +1,9 @@
-
-
 const https = require('http')
-const fs = require('fs')
+const fs = require('fs') //?
 const WebSocketServer = require('ws').Server
 // Create the encoder.
 // Specify 24kHz sampling rate and 1 channel size.
-let { OpusEncoder } = require('@discordjs/opus')
+const { OpusEncoder } = require('@discordjs/opus')
 const encoder = new OpusEncoder(24000, 1)
 
 const wsPort = 8080
@@ -20,25 +18,48 @@ const httpsServer = https
 const wss = new WebSocketServer({ server: httpsServer })
 
 const vosk = require('vosk')
-vosk.setLogLevel(-1)
+vosk.setLogLevel(-1) //?
 // MODELS: https://alphacephei.com/vosk/models
-const model = new vosk.Model('samples/vosk-model-fr')
-const rec = new vosk.Recognizer({ model: model, sampleRate: 24000 })
-vosk._rec_ = rec
-// dev reference: https://github.com/alphacep/vosk-api/blob/master/nodejs/index.js
+const recs = {
+  es: new vosk.Recognizer({
+    model: new vosk.Model('samples/vosk-model-es'),
+    sampleRate: 24000,
+  }),
+  fr: new vosk.Recognizer({
+    model: new vosk.Model('samples/vosk-model-fr'),
+    sampleRate: 24000,
+  }),
+}
 
 wss.on('connection', function (ws, req) {
+  let active_rec = recs.fr //depending on your active language
   ws.on('message', function (message) {
     //5 : message == opus encoded data
-    //console.log(message)
+    if (typeof message === 'object') {
+      //6 : decode data --> raw audio data
+      let raw_data = encoder.decode(message)
 
-    //6 : decode data --> raw audio data
-    let raw_data = encoder.decode(message)
+      //7 : send raw audio data to VOSK API
+      if (active_rec.acceptWaveform(raw_data)) {
+        const txt = active_rec.result().text
+        ws.send(txt) //8: output
 
-    //7 : send raw audio data to VOSK API
-    if (vosk._rec_.acceptWaveform(raw_data))
-      //console.log(vosk._rec_.result()); //8: output
-      ws.send(vosk._rec_.result().text)
+        // change & test:
+        // todo : if changed by voice then update UI box
+        if (txt == 'change spanish') {
+          active_rec = recs.en
+        } else if (txt == 'change french') {
+          active_rec = recs.fr
+        }
+      }
+    } else {
+      console.log(message)
+      if (message.includes('changeLang')) {
+        let idx = message.split(':')[1]
+        active_rec = recs[idx]
+        console.log('new active rec: ', idx)
+      }
+    }
   })
   console.log('Speaker connected')
 })

@@ -10,32 +10,58 @@
 html {
   font-size: 62, 5%;
 }
+body {
+  width: 100vw;
+  height: 100vh;
+}
 button {
   float: right;
   width: 10rem;
   height: 5rem;
+  padding: 1rem;
   border: none;
   font-weight: bold;
-  background-color: lightgreen;
+
   color: #000;
   position: relative;
+  margin: 15px;
+}
+.start,
+.open-calendar {
+  background-color: lightgreen;
+}
+.open-calendar:hover {
+  box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+  background-color: chartreuse;
 }
 .stop {
   color: #f1f1f1;
   background-color: crimson;
 }
-button:hover {
+.start:hover {
   /* box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px; */
   box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+  background-color: chartreuse;
+}
+.stop:hover {
+  background-color: red;
+}
+
+.close-calendar {
+  color: #f1f1f1;
+  background-color: crimson;
+}
+.close-calendar:hover {
+  background-color: red;
 }
 
 .output {
   width: 80%;
   height: auto;
   position: absolute;
-  top: 10%;
+  top: 20%;
   left: 2%;
-  font-size: 2.5rem;
+  font-size: 2rem;
 }
 .box-shadow {
   background-color: white;
@@ -44,8 +70,16 @@ button:hover {
   margin: 10px 0;
 }
 
+.placement-link {
+  display: inline-block;
+}
+
+.input-calendar {
+}
+
 @media screen and (max-width: 690px) {
   .output {
+    top: 30%;
     font-size: 1.3rem;
   }
 }
